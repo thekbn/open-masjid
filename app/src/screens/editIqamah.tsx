@@ -32,13 +32,13 @@ const styles = StyleSheet.create({
     },
 });
 
-const initialIqamah = {
-    fajr: '',
-    zuhr: '',
-    asr: '',
-    maghrib: '',
-    isha: ''
-}
+const initialIqamah = [
+    {salah: 'Fajr', time: ''},
+    {salah: 'Zuhr', time: ''},
+    {salah: 'Asr', time: ''},
+    {salah: 'Maghrib', time: ''},
+    {salah: 'Isha', time: ''},
+];
 
 const EditIqamahScreen = ({ navigation, route }) => {
     const { updateMasjid } = useContext(MasjidListContext);
@@ -50,13 +50,13 @@ const EditIqamahScreen = ({ navigation, route }) => {
     })
 
     const [salahPicked, setSalahPicked] = useState('');
-    const [iqamah, setIqamah] = useState(masjid?.iqamah || initialIqamah);
+    const [iqamah, setIqamah] = useState(masjid?.iqamah?.length || initialIqamah);
     const [showTimePicker, setShowTimePicker] = useState(false);
 
     const updateIqamah = (salah, time) => {
         if (!time) return;
-        const newIqamah = Object.assign({}, iqamah);
-        newIqamah[salah] = time;
+        const newIqamah = [...iqamah];
+        newIqamah.find(i => i.salah === salah).time = time;
 
         setIqamah(newIqamah);
     };
@@ -79,11 +79,11 @@ const EditIqamahScreen = ({ navigation, route }) => {
                 renderItem={({ item }) => (
                     <TouchableOpacity
                         style={styles.item}
-                        onPress={() => displayTimerPicker(item[0])}
+                        onPress={() => displayTimerPicker(item[1].salah)}
                     >
-                        <Text style={styles.name}>{capitalize(item[0])}</Text>
+                        <Text style={styles.name}>{item[1].salah}</Text>
                         <Text>
-                            {dateToTime(item[1])}
+                            {dateToTime(item[1].time)}
                         </Text>
                     </TouchableOpacity>
                 )}

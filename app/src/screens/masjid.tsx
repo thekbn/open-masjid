@@ -27,11 +27,11 @@ const styles = StyleSheet.create({
 });
 
 const initialIqamah = [
-    {fajr: ''},
-    {zuhr: ''},
-    {asr: ''},
-    {maghrib: ''},
-    {isha: ''}
+    {salah: 'Fajr', time: ''},
+    {salah: 'Zuhr', time: ''},
+    {salah: 'Asr', time: ''},
+    {salah: 'Maghrib', time: ''},
+    {salah: 'Isha', time: ''},
 ];
 
 const MasjidScreen = ({ navigation, route }) => {
@@ -86,9 +86,9 @@ const MasjidScreen = ({ navigation, route }) => {
                             style={styles.item}
                             onPress={() => displayTimerPicker(item[1].salah)}
                         >
-                            <Text style={styles.name}>{capitalize(item[1].salah)}</Text>
+                            <Text style={styles.name}>{item[1].salah}</Text>
                             <Text>
-                                {dateToTime(item[1])}
+                                {dateToTime(item[1].time)}
                             </Text>
                         </TouchableOpacity>
                     )}
@@ -113,9 +113,5 @@ const MasjidScreen = ({ navigation, route }) => {
         </View>
     );
 };
-
-function capitalize(str: String) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-}
 
 export default MasjidScreen;
