@@ -11,11 +11,12 @@ pool:
 
 steps:
 - task: DownloadSecureFile@1
+  name: mySecureFile
   inputs:
     secureFile: '.env'
 - task: CopyFiles@2
   inputs:
-    SourceFolder: '$(agent.builddirectory)'
+    SourceFolder: '$(mySecureFile.secureFilePath)'
     Contents: '.env'
     TargetFolder: '$(agent.builddirectory)/api'
 - task: DockerCompose@0
