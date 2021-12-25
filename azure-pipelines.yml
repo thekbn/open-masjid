@@ -25,12 +25,4 @@ steps:
     azureSubscription: 'Visual Studio Enterprise (0707557e-135b-4714-b0af-80210ac7bc4e)'
     azureContainerRegistry: '{"loginServer":"openmasjid.azurecr.io", "id" : "/subscriptions/0707557e-135b-4714-b0af-80210ac7bc4e/resourceGroups/open-masjid/providers/Microsoft.ContainerRegistry/registries/openmasjid"}'
     dockerComposeFile: '**/docker-compose.yaml'
-    action: 'Build services'
-- task: DockerCompose@0
-  displayName: 'Push image'
-  inputs:
-    containerregistrytype: 'Azure Container Registry'
-    azureSubscription: 'Visual Studio Enterprise (0707557e-135b-4714-b0af-80210ac7bc4e)'
-    azureContainerRegistry: '{"loginServer":"openmasjid.azurecr.io", "id" : "/subscriptions/0707557e-135b-4714-b0af-80210ac7bc4e/resourceGroups/open-masjid/providers/Microsoft.ContainerRegistry/registries/openmasjid"}'
-    dockerComposeFile: '**/docker-compose.yaml'
-    action: 'Push services'
+    action: 'Run services'
