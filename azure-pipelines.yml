@@ -18,7 +18,7 @@ steps:
   inputs:
     SourceFolder: '$(Agent.TempDirectory)'
     Contents: '.env'
-    TargetFolder: '$(agent.builddirectory)/api'
+    TargetFolder: '$(Build.Repository.LocalPath)/api'
 - task: DockerCompose@0
   inputs:
     containerregistrytype: 'Azure Container Registry'
