@@ -16,7 +16,7 @@ steps:
     secureFile: '.env'
 - task: CopyFiles@2
   inputs:
-    SourceFolder: '$(mySecureFile.secureFilePath)'
+    SourceFolder: '$(Agent.TempDirectory)'
     Contents: '.env'
     TargetFolder: '$(agent.builddirectory)/api'
 - task: DockerCompose@0
