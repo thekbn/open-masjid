@@ -30,4 +30,3 @@ steps:
       POSTGRES_PASSWORD=password
       POSTGRES_DB=open_masjid
     action: 'Push services'
-    arguments: '--env-file /dev/null'
