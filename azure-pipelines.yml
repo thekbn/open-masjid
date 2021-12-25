@@ -10,6 +10,14 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
+- task: DownloadSecureFile@1
+  inputs:
+    secureFile: '.env'
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(agent.builddirectory)'
+    Contents: '.env'
+    TargetFolder: '$(agent.builddirectory)/api'
 - task: DockerCompose@0
   inputs:
     containerregistrytype: 'Azure Container Registry'
