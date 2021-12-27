@@ -1,8 +1,8 @@
 const fastify = require('fastify')({ logger: true })
 const route  = require('./routes')
-const dbconnector = require('./db')
+import prismaPlugin from './plugins/prisma'
 
-fastify.register(dbconnector)
+fastify.register(prismaPlugin)
 fastify.register(route)
 
 const start = async () => {
