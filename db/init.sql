@@ -17,3 +17,11 @@ CREATE TABLE iqamah (
     salah text NOT NULL REFERENCES salah(name),
     time time without time zone
 );
+
+INSERT INTO salah (name) values ('Fajr');
+INSERT INTO salah (name) values ('Zuhr');
+INSERT INTO salah (name) values ('Asr');
+INSERT INTO salah (name) values ('Maghrib');
+INSERT INTO salah (name) values ('Isha');
+INSERT INTO salah (name) values ('Jummuah');
+

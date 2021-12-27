@@ -17,11 +17,13 @@ export default () => {
 
   const loadData = async () => {
     setLoading(true);
-    const response = await fetch('https://open-masjid.loca.lt/masjids');
-    const newData = await response.json();
+    
+    const response = await fetch(`${process.env.API_URL}/masjids`)
+      .then(r => r.json())
+      .catch(err => console.error(err));
     let loadedMasjids: [] = [];
 
-    newData.forEach((i: any) => {
+    response.forEach((i: any) => {
       const existingMasjid = loadedMasjids.find(m => m.id === i._id);
       if (existingMasjid) {
         existingMasjid.iqamah.push({ salah: i.salah, time: i.time })
@@ -76,7 +78,7 @@ export default () => {
             component={Home}
             options={{ title: 'Near by Masjid' }}
           />
-          
+
           <Stack.Screen
             name="Masjid Profile"
             component={MasjidScreen} />

@@ -2,11 +2,12 @@ const fastifyPlugin = require('fastify-plugin')
 const { Client } = require('pg') 
 require('dotenv').config() 
 const client = new Client({ 
+    host: process.env.POSTGRES_HOST, 
+    port: process.env.POSTGRES_PORT, 
     user: process.env.POSTGRES_USER, 
     password:process.env.POSTGRES_PASSWORD, 
-    host: 'localhost', 
-    port: 5432, 
-    database: process.env.POSTGRES_DB 
+    database: process.env.POSTGRES_DB,
+    ssl: true 
 }) 
 async function dbconnector(fastify, options) { 
     try { 
