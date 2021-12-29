@@ -69,6 +69,7 @@ const MasjidScreen = ({ navigation, route }) => {
 
     return (
         <View>
+            
             <Image
                 style={{ height: Dimensions.get('window').width / 2, aspectRatio: 1 }}
                 source={{ uri: masjid?.image ?? '' }}
@@ -81,6 +82,7 @@ const MasjidScreen = ({ navigation, route }) => {
             {iqamah &&
                 <FlatList
                     data={Object.entries(iqamah)}
+                    keyExtractor={(item, index) => item}
                     renderItem={({ item }) => (
                         <TouchableOpacity 
                             style={styles.item}
@@ -102,7 +104,7 @@ const MasjidScreen = ({ navigation, route }) => {
                 />
             )}
             <Button
-                title={masjid?.iqamah ? 'Edit Iqamah' : 'Add Iqamah'}
+                title={'Update Iqamah'}
                 onPress={() => navigation.navigate({
                     name: 'Edit Iqamah',
                     params: {

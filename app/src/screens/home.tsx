@@ -4,9 +4,13 @@ import { ActivityIndicator, StyleSheet, FlatList, Text, View, Button, SafeAreaVi
 import MasjidListContext from '../contexts/MasjidListContext';
 
 const styles = StyleSheet.create({
+    center: {
+        flex: 1,
+        justifyContent: "center"
+    },
     container: {
         flex: 1,
-        marginHorizontal: 16
+        marginHorizontal: 16,
     },
     item: {
         padding: 10,
@@ -20,7 +24,11 @@ const Home = ({ navigation, route }) => {
 
     return (
         <SafeAreaView style={styles.container}>
-            {isLoading ? <ActivityIndicator /> :
+            {isLoading ?
+                <View style={styles.center}>
+                    <ActivityIndicator size="large" color="#0000ff" />
+                </View>
+                :
                 <View>
                     <FlatList
                         data={masjids}
@@ -30,8 +38,8 @@ const Home = ({ navigation, route }) => {
                             }>{item.name}</Text>
                         )}
                     />
-                    <Button 
-                        title='Add Masjid' 
+                    <Button
+                        title='Add Masjid'
                         onPress={() => navigation.navigate({
                             name: 'Edit Masjid'
                         })}

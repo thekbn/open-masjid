@@ -1,13 +1,15 @@
 import React, { useEffect, useState, createContext } from 'react';
-import { ActivityIndicator, StyleSheet, FlatList, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import apiClient from './src/util/masjidApi';
 
 import MasjidListContext from './src/contexts/MasjidListContext';
 import Home from './src/screens/home';
 import MasjidScreen from './src/screens/masjid';
 import EditMasjidScreen from './src/screens/editMasjid';
 import EditIqamahScreen from './src/screens/editIqamah';
+
+
 
 const Stack = createNativeStackNavigator();
 
@@ -17,33 +19,16 @@ export default () => {
 
   const loadData = async () => {
     setLoading(true);
-    
-    const response = await fetch(`${process.env.API_URL}/masjids`)
-      .then(r => r.json())
-      .catch(err => console.error(err));
+
     let loadedMasjids: [] = [];
 
-    response.forEach((i: any) => {
-      const existingMasjid = loadedMasjids.find(m => m.id === i._id);
-      if (existingMasjid) {
-        existingMasjid.iqamah.push({ salah: i.salah, time: i.time })
-      } else {
-        const iqamah = i.salah ?
-          [{
-            salah: i.salah, time: i.time
-          }]
-          : [];
-
-        loadedMasjids.push({
-          id: i._id,
-          name: i.name,
-          iqamah: iqamah
-        })
-      }
-    });
-
-    setMasjids(loadedMasjids)
-    setLoading(false);
+    apiClient.get('/masjids')
+      .then(r => r.data)
+      .then(data => {
+        setMasjids(data)
+        setLoading(false);
+      })
+      .catch(err => console.error(err));
   };
 
   const updateMasjid = (newMasjid: any) => {

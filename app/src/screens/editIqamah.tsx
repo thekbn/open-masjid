@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Image, StyleSheet, FlatList, Text, View, Dimensions, TextInput, Button, TouchableOpacity } from 'react-native';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
+import apiClient from '../util/masjidApi';
 
 import MasjidListContext from '../contexts/MasjidListContext'
 import { dateToTime } from '../util/date'
@@ -41,7 +42,7 @@ const initialIqamah = [
 ];
 
 const EditIqamahScreen = ({ navigation, route }) => {
-    const { updateMasjid } = useContext(MasjidListContext);
+    const { loadData } = useContext(MasjidListContext);
     const { masjid } = route.params;
 
     useEffect(() => {
@@ -100,11 +101,17 @@ const EditIqamahScreen = ({ navigation, route }) => {
 
             <Button
                 title='Save'
-                onPress={() => {
-                    masjid.iqamah = iqamah;
-                    console.log('updated iqamah' +  JSON.stringify(masjid))
+                onPress={async () => {
+                    await apiClient.post(`/masjid/${masjid.id}/iqamah`,
+                        JSON.stringify(iqamah),
+                        {
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        }
+                    ).catch(err => console.error(err));
 
-                    updateMasjid(masjid);
+                    loadData();
 
                     navigation.navigate({
                         name: 'Masjid Profile',

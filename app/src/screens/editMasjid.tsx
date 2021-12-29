@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Image, StyleSheet, FlatList, Text, View, Dimensions, TextInput, Button } from 'react-native';
+import apiClient from '../util/masjidApi';
 
 import MasjidListContext from '../contexts/MasjidListContext';
 
@@ -62,13 +63,12 @@ const EditMasjidScreen = ({ navigation, route }) => {
             <Button
                 title='Save'
                 onPress={async () => {
-                    await fetch('https://open-masjid.loca.lt/masjids',
+                    await apiClient.post('/masjids',
+                        JSON.stringify({ name, address }),
                         {
-                            method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ name, address })
+                            }
                         }
                     );
                     loadData();
