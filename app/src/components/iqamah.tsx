@@ -30,7 +30,7 @@ const initialIqamah = [
 
 const Iqamah = (props) => {
 
-    console.log(props)
+    console.log("props:\n" + JSON.stringify(props))
 
     const [disabled, setDisabled] = useState(props.disabled);
     const [salahPicked, setSalahPicked] = useState('');

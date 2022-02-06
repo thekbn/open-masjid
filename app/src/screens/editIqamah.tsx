@@ -3,6 +3,7 @@ import { Image, StyleSheet, FlatList, Text, View, Dimensions, TextInput, Button,
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 import apiClient from '../util/masjidApi';
 
+import Iqamah from '../components/iqamah';
 import MasjidListContext from '../contexts/MasjidListContext'
 import { dateToClockTime } from '../util/date'
 
@@ -50,59 +51,19 @@ const EditIqamahScreen = ({ navigation, route }) => {
         navigation.setOptions({ title: title });
     })
 
-    const [salahPicked, setSalahPicked] = useState('');
     const [iqamah, setIqamah] = useState(masjid?.iqamah?.length ? masjid?.iqamah : initialIqamah);
-    const [showTimePicker, setShowTimePicker] = useState(false);
-
-    const updateIqamah = (salah, time) => {
-        if (!time) return;
-        console.log("updating iqamah after time picked: \n" + JSON.stringify(time))
-        const newIqamah = [...iqamah];
-        newIqamah.find(i => i.salah === salah).time = time;
-
-        setIqamah(newIqamah);
-    };
-
-    const handleTimeDatePicked = (event, date) => {
-        updateIqamah(salahPicked, date);
-        setShowTimePicker(false);
-    };
-
-    const displayTimerPicker = (prayer) => {
-        setSalahPicked(prayer);
-        setShowTimePicker(true);
-    };
-
+    const [saving, setSaving] = useState(false);
 
     return (
         <View>
-            <FlatList
-                data={Object.entries(iqamah)}
-                renderItem={({ item }) => (
-                    <TouchableOpacity
-                        style={styles.item}
-                        onPress={() => displayTimerPicker(item[1].salah)}
-                    >
-                        <Text style={styles.name}>{item[1].salah}</Text>
-                        <Text>
-                            {dateToClockTime(item[1].time)}
-                        </Text>
-                    </TouchableOpacity>
-                )}
-            />
-
-
-            {showTimePicker && (
-                <RNDateTimePicker
-                    mode="time"
-                    value={new Date()}
-                    onChange={handleTimeDatePicked}
-                />
-            )}
+            <Iqamah iqamah={iqamah} />
 
             <Button
                 title='Save'
+                disabled={saving}
                 onPress={async () => {
+                    setSaving(true);
+
                     await apiClient.post(`/masjid/${masjid.id}/iqamah`,
                         JSON.stringify(sanitizeIqamah(iqamah)),
                         {
@@ -110,31 +71,35 @@ const EditIqamahScreen = ({ navigation, route }) => {
                                 'Content-Type': 'application/json'
                             }
                         }
-                    ).catch(err => console.error(err));
+                    ).then(response =>{
+                        loadData();
 
-                    loadData();
+                        navigation.navigate({
+                            name: 'Masjid Profile',
+                            params: {
+                                masjidId: masjid.id
+                            }
+                        });
+                    })
+                    .catch(err => console.error(err));
 
-                    navigation.navigate({
-                        name: 'Masjid Profile',
-                        params: {
-                            masjidId: masjid.id
-                        }
-                    });
                 }}
             />
         </View>
     );
 };
 
-function capitalize(str: String) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-}
+/**
+ * Updated iqamah time from JS date to military time format
+ * @param iqamahList 
+ * @returns 
+ */
+function sanitizeIqamah(iqamahList) {
+    return iqamahList.map(i => {
+        const cleanIaqmah = {...i};
+        cleanIaqmah.time = cleanIaqmah.time ? dateToClockTime(cleanIaqmah.time, true) : null;
 
-function sanitizeIqamah(iqamah) {
-    return iqamah.map(i => {
-        i.time = i.time ? dateToClockTime(i.time, true) : null;
-
-        return i;
+        return cleanIaqmah;
     });
 }
 
