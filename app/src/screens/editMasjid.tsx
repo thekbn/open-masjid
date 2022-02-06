@@ -33,12 +33,16 @@ const styles = StyleSheet.create({
 
 const EditMasjidScreen = ({ navigation, route }) => {
 
-    const { masjid } = route.params || {};
+    const { masjidId } = route.params || {};
 
-    const { loadData } = useContext(MasjidListContext);
+    const { masjids, loadData } = useContext(MasjidListContext);
+    const [masjid, setMasjid] = useState(null);
 
     useEffect(() => {
-        const title = masjid ? 'Edit Masjid' : 'New Masjid';
+        const masjid = masjids.find(m => m.id === masjidId);
+        setMasjid(masjid);
+
+        const title = masjidId ? 'Edit Masjid' : 'New Masjid';
         navigation.setOptions({ title: title });
     })
 
@@ -63,7 +67,7 @@ const EditMasjidScreen = ({ navigation, route }) => {
             <Button
                 title='Save'
                 onPress={async () => {
-                    await apiClient.post('/masjids',
+                    await apiClient.post('/masjid',
                         JSON.stringify({ name, address }),
                         {
                             headers: {

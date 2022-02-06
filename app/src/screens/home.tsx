@@ -1,5 +1,6 @@
 import React, { useEffect, useState, createContext, useContext } from 'react';
-import { ActivityIndicator, StyleSheet, FlatList, Text, View, Button, SafeAreaView } from 'react-native';
+import { ActivityIndicator, StyleSheet, FlatList, Text, View, SafeAreaView, TouchableHighlight } from 'react-native';
+import { Button, FAB } from 'react-native-elements';
 
 import MasjidListContext from '../contexts/MasjidListContext';
 
@@ -20,31 +21,40 @@ const styles = StyleSheet.create({
 });
 
 const Home = ({ navigation, route }) => {
-    const { masjids, isLoading } = useContext(MasjidListContext);
+    const { masjids, loadData, isLoading, errorMessage } = useContext(MasjidListContext);
 
     return (
         <SafeAreaView style={styles.container}>
             {isLoading ?
                 <View style={styles.center}>
                     <ActivityIndicator size="large" color="#0000ff" />
+                    <Text>{errorMessage}</Text>
                 </View>
                 :
-                <View>
-                    <FlatList
-                        data={masjids}
-                        renderItem={({ item }) => (
-                            <Text style={styles.item} onPress={() =>
-                                navigation.navigate('Masjid Profile', { masjid: item })
-                            }>{item.name}</Text>
-                        )}
-                    />
-                    <Button
-                        title='Add Masjid'
-                        onPress={() => navigation.navigate({
-                            name: 'Edit Masjid'
-                        })}
-                    />
-                </View>
+                errorMessage ?
+                    <View style={styles.center}>
+                        <Button title='Reload' onPress={loadData}/>
+                        <Text>{errorMessage}</Text>
+                    </View>
+                    :
+                    <View style={{ height: '100%' }}>
+                        <FlatList
+                            data={masjids}
+                            renderItem={({ item }) => (
+                                <Text style={styles.item} onPress={() =>
+                                    navigation.navigate('Masjid Profile', { masjidId: item.id })
+                                }>{item.name}</Text>
+                            )}
+                        />
+                        <FAB
+                            placement='right'
+                            onPress={() => navigation.navigate({
+                                name: 'Edit Masjid'
+                            })}
+                            icon={{ name: 'add', color: 'white' }}
+                            color="green"
+                        />
+                    </View>
             }
         </SafeAreaView>
     );

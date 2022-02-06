@@ -25,10 +25,9 @@ DO UPDATE SET time = EXCLUDED.TIME;
 `;
 
 async function routes(fastify: any, options: any) {
-    const db = fastify.db.client
-
     fastify.get('/masjids', async (request: any, reply: any) => {
-        const { rows } = await db.query(QUERY_MASJID_WITH_IQAMAH);
+        const { rows } = await fastify.pg.query(QUERY_MASJID_WITH_IQAMAH);
+
         reply.header("Access-Control-Allow-Origin", "*");
         reply.header("Access-Control-Allow-Methods", "POST");
         reply.send(rows)
@@ -40,14 +39,19 @@ async function routes(fastify: any, options: any) {
 
             const values = [name, address];
 
-            const res = await db.query(QUERY_ADD_MASJID, values);
+            const res = await fastify.pg.transact(async (client: any) => {
+                const res = await client.query(QUERY_ADD_MASJID, values);
 
-            if(res.rowCount == 1){
-                reply.header("Access-Control-Allow-Origin", "*");
-                reply.header("Access-Control-Allow-Methods", "POST");
-                reply.status(201)
-                reply.send(res.rows[0])
-            }
+                if(res.rowCount == 1){
+                    reply.header("Access-Control-Allow-Origin", "*");
+                    reply.header("Access-Control-Allow-Methods", "POST");
+                    reply.status(201)
+                    reply.send(res.rows[0])
+                }else {
+                    throw new Error(`unable to create new masjid, body: ${JSON.stringify(request.body)}`);
+                }
+            })
+
         } catch (err) {
             console.log(err)
             reply.send(new Error("bad request"))
@@ -67,7 +71,7 @@ async function routes(fastify: any, options: any) {
 
             console.log(upsertIqamah);
 
-            const res = await db.query(upsertIqamah);
+            const res = await fastify.pg.query(upsertIqamah);
             
             reply.header("Access-Control-Allow-Origin", "*");
             reply.header("Access-Control-Allow-Methods", "POST");

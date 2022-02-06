@@ -1,9 +1,11 @@
-import React, { useEffect, useState, useCallback} from 'react';
+import React, { useEffect, useState, useCallback, useContext} from 'react';
 import { Image, StyleSheet, FlatList, Text, View, Dimensions, Button, TouchableOpacity } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 
-import { dateToTime } from '../util/date'
+import MasjidListContext from '../contexts/MasjidListContext';
+import Iqamah from '../components/iqamah';
+import { dateToClockTime } from '../util/date'
 
 const styles = StyleSheet.create({
     container: {
@@ -35,19 +37,23 @@ const initialIqamah = [
 ];
 
 const MasjidScreen = ({ navigation, route }) => {
-    const { masjid } = route.params;
+    const { masjidId } = route.params;
+
+    const { masjids, loadData } = useContext(MasjidListContext);
+    const [masjid, setMasjid] = useState(null);
+    const [iqamah, setIqamah] = useState({});
+    const [showTimePicker, setShowTimePicker] = useState(false);
+    const [salahPicked, setSalahPicked] = useState('');
 
     useFocusEffect(
         useCallback(() => {
-            console.log('received iqamah'+ Date.now() +  JSON.stringify(iqamah))
-            navigation.setOptions({ title: masjid.name });
-            setIqamah(masjid?.iqamah?.length || initialIqamah);
-        }, [masjid])
-    );
+            const masjid = masjids.find(m => m.id === masjidId);
+            setMasjid(masjid);
 
-    const [showTimePicker, setShowTimePicker] = useState(false);
-    const [salahPicked, setSalahPicked] = useState('');
-    const [iqamah, setIqamah] = useState({});
+            navigation.setOptions({ title: masjid.name });
+            setIqamah(masjid?.iqamah?.length ? masjid?.iqamah : initialIqamah);
+        }, [masjids])
+    );
 
     const updateIqamah = (salah, time) => {
         if (!time) return;
@@ -80,21 +86,22 @@ const MasjidScreen = ({ navigation, route }) => {
             }
 
             {iqamah &&
-                <FlatList
-                    data={Object.entries(iqamah)}
-                    keyExtractor={(item, index) => item}
-                    renderItem={({ item }) => (
-                        <TouchableOpacity 
-                            style={styles.item}
-                            onPress={() => displayTimerPicker(item[1].salah)}
-                        >
-                            <Text style={styles.name}>{item[1].salah}</Text>
-                            <Text>
-                                {dateToTime(item[1].time)}
-                            </Text>
-                        </TouchableOpacity>
-                    )}
-                />
+                // <FlatList
+                //     data={Object.entries(iqamah)}
+                //     keyExtractor={(item, index) => item}
+                //     renderItem={({ item }) => (
+                //         <TouchableOpacity 
+                //             style={styles.item}
+                //             onPress={() => displayTimerPicker(item[1].salah)}
+                //         >
+                //             <Text style={styles.name}>{item[1].salah}</Text>
+                //             <Text>
+                //                 {dateToClockTime(item[1].time)}
+                //             </Text>
+                //         </TouchableOpacity>
+                //     )}
+                // />
+                <Iqamah iqamah={iqamah} disabled />
             }
             {showTimePicker && (
                 <RNDateTimePicker

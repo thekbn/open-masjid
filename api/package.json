@@ -12,6 +12,7 @@
     "dotenv": "^10.0.0",
     "fastify": "^3.24.0",
     "fastify-plugin": "^3.0.0",
+    "fastify-postgres": "^3.6.0",
     "npm": "^8.3.0",
     "pg": "^8.7.1",
     "pg-format": "^1.0.4"

@@ -1,8 +1,16 @@
 const fastify = require('fastify')({ logger: true })
-const route  = require('./routes')
-const dbconnector = require('./db')
+const route = require('./routes')
+require('dotenv').config()
 
-fastify.register(dbconnector)
+fastify.register(require('fastify-postgres'), {
+  host: process.env.POSTGRES_HOST,
+  port: process.env.POSTGRES_PORT,
+  user: process.env.POSTGRES_USER,
+  password: process.env.POSTGRES_PASSWORD,
+  database: process.env.POSTGRES_DB,
+  ssl: true
+})
+
 fastify.register(route)
 
 const start = async () => {

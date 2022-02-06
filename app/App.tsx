@@ -16,9 +16,11 @@ const Stack = createNativeStackNavigator();
 export default () => {
   const [masjids, setMasjids] = useState([]);
   const [isLoading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const loadData = async () => {
     setLoading(true);
+    setErrorMessage('');
 
     let loadedMasjids: [] = [];
 
@@ -28,7 +30,11 @@ export default () => {
         setMasjids(data)
         setLoading(false);
       })
-      .catch(err => console.error(err));
+      .catch(err => {
+        setLoading(false);
+        setErrorMessage("Error from server")
+        console.error(err);
+      });
   };
 
   const updateMasjid = (newMasjid: any) => {
@@ -52,7 +58,7 @@ export default () => {
     loadData();
   }, []);
 
-  const value = { masjids, updateMasjid, loadData, isLoading, setLoading };
+  const value = { masjids, updateMasjid, loadData, isLoading, setLoading, errorMessage };
 
   return (
     <MasjidListContext.Provider value={value}>
