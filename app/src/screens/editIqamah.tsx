@@ -64,8 +64,8 @@ const EditIqamahScreen = ({ navigation, route }) => {
                 onPress={async () => {
                     setSaving(true);
 
-                    await apiClient.post(`/masjid/${masjid.id}/iqamah`,
-                        JSON.stringify(sanitizeIqamah(iqamah)),
+                    await apiClient.put(`/masjid/${masjid.id}`,
+                        {...masjid, iqamahs: sanitizeIqamah(iqamah)},
                         {
                             headers: {
                                 'Content-Type': 'application/json'

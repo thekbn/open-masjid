@@ -20,26 +20,16 @@ const styles = StyleSheet.create({
     }
 });
 
-const initialIqamah = [
-    { salah: 'Fajr', time: '' },
-    { salah: 'Zuhr', time: '' },
-    { salah: 'Asr', time: '' },
-    { salah: 'Maghrib', time: '' },
-    { salah: 'Isha', time: '' },
-];
-
 const Iqamah = (props) => {
-
-    console.log("props:\n" + JSON.stringify(props))
-
     const [disabled, setDisabled] = useState(props.disabled);
     const [salahPicked, setSalahPicked] = useState('');
+    const [timePicked, setTimePicked] = useState(new Date());
     const [iqamah, setIqamah] = useState([]);
     const [showTimePicker, setShowTimePicker] = useState(false);
 
     const updateIqamah = (salah, time) => {
         if (!time) return;
-        console.log("updating iqamah after time picked: \n" + JSON.stringify(time))
+        
         const newIqamah = [...iqamah];
         newIqamah.find(i => i.salah === salah).time = time;
 
@@ -47,13 +37,17 @@ const Iqamah = (props) => {
     };
 
     const handleTimeDatePicked = (event, date) => {
-        updateIqamah(salahPicked, date);
+        if(event.type === "set"){
+            updateIqamah(salahPicked, date);
+        }
         setShowTimePicker(false);
     };
 
 
-    const displayTimerPicker = (prayer) => {
-        setSalahPicked(prayer);
+    const displayTimerPicker = (prayer) => {       
+        setSalahPicked(prayer.salah);
+        setTimePicked(prayer.time ?? new Date());
+
         setShowTimePicker(true);
     };
 
@@ -64,19 +58,19 @@ const Iqamah = (props) => {
     return (
         <View>
             <FlatList
-                data={Object.entries(iqamah)}
-                keyExtractor={(item, index) => item}
-                renderItem={({ item }) => (
+                data={iqamah}
+                keyExtractor={({index}) => index}
+                renderItem={({item}) => (
                     <TouchableOpacity
                         disabled={disabled}
                         style={styles.item}
-                        onPress={() => displayTimerPicker(item[1].salah)}
+                        onPress={() => displayTimerPicker(item)}
                     >
                         <Text style={styles.name}>
-                            {item[1].salah}
+                            {item.salah}
                         </Text>
                         <Text>
-                            {dateToClockTime(item[1].time)}
+                            {dateToClockTime(item.time)}
                         </Text>
                     </TouchableOpacity>
                 )}
@@ -84,7 +78,7 @@ const Iqamah = (props) => {
             {showTimePicker && (
                 <RNDateTimePicker
                     mode="time"
-                    value={new Date()}
+                    value={timePicked}
                     onChange={handleTimeDatePicked}
                 />
             )}
