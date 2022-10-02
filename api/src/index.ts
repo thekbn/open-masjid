@@ -8,7 +8,7 @@ fastify.register(require('fastify-postgres'), {
   user: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PASSWORD,
   database: process.env.POSTGRES_DB,
-  ssl: true
+  ssl: process.env.POSTGRES_HOST ? true : false
 })
 
 fastify.register(route)

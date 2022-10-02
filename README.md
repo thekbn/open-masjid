@@ -8,6 +8,7 @@ Create an open source system for masjids to better serve their community by prov
 `npx localtunnel --subdomain open-masjid --port 3000`
 
 ### 2. Start database:
+Rename the file `.env-example` in `api` to `.env` and update values if needed.
 `docker-compose up -d`
 
 ### 3. Start api

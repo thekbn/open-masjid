@@ -15,8 +15,8 @@ CREATE TABLE iqamah (
     id SERIAL PRIMARY KEY,
     masjid_id integer NOT NULL REFERENCES masjids(id),
     salah text NOT NULL REFERENCES salah(name),
-    time TIME WITHOUT TIME ZONE,
-    UNIQUE masjid_salah (masjid_id, salah)
+    time time without time zone,
+    CONSTRAINT masjid_salah UNIQUE (masjid_id, salah)
 );
 
 INSERT INTO salah (name) values ('Fajr');

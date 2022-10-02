@@ -78,7 +78,7 @@ const EditMasjidScreen = ({ navigation, route }) => {
                 title='Save'
                 onPress={async () => {
                     await apiClient.post('/masjid',
-                        JSON.stringify({ masjidUpdates }),
+                        JSON.stringify({ ...masjidUpdates }),
                         {
                             headers: {
                                 'Content-Type': 'application/json'
