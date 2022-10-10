@@ -1,7 +1,7 @@
 import React, { useEffect, useState, createContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import apiClient from './src/util/masjidApi';
+import { masjidApi } from './src/util/masjidApi';
 
 import MasjidListContext from './src/contexts/MasjidListContext';
 import Home from './src/screens/home';
@@ -24,7 +24,7 @@ export default () => {
 
     let loadedMasjids: [] = [];
 
-    apiClient.get('/masjids')
+    await masjidApi.getMasjids()
       .then(r => r.data)
       .then(data => {
         setMasjids(data)

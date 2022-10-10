@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Image, StyleSheet, FlatList, Text, View, Dimensions, TextInput, Button } from 'react-native';
-import apiClient from '../util/masjidApi';
+import { masjidApi } from '../util/masjidApi';
 
 import MasjidListContext from '../contexts/MasjidListContext';
 
@@ -77,20 +77,13 @@ const EditMasjidScreen = ({ navigation, route }) => {
             <Button
                 title='Save'
                 onPress={async () => {
-                    await apiClient.post('/masjid',
-                        JSON.stringify({ ...masjidUpdates }),
-                        {
-                            headers: {
-                                'Content-Type': 'application/json'
-                            }
-                        }
-                    ).then(response => {
-                        loadData();
-                        navigation.navigate('Home');
-                    }).catch(error => {
-                        alert("Error encountered while saving")
-                    });
-                    
+                    if (masjidUpdates?.id) {
+                        await masjidApi.updateMasjid(masjidUpdates.id, masjidUpdates);
+                    } else {
+                        await masjidApi.addMasjid(masjidUpdates);
+                    }
+                    loadData();
+                    navigation.goBack();                    
                 }}
             />
         </View>

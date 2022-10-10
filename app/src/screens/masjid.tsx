@@ -49,6 +49,9 @@ const MasjidScreen = ({ navigation, route }) => {
     useFocusEffect(
         useCallback(() => {
             const masjid = masjids.find(m => m.id === masjidId);
+
+            console.log(masjid);
+
             setMasjid(masjid);
 
             navigation.setOptions({ title: masjid.name });
@@ -67,7 +70,7 @@ const MasjidScreen = ({ navigation, route }) => {
             })} />
           ),
         });
-      }, [navigation]);
+      }, [navigation, masjid]);
 
     const updateIqamah = (salah, time) => {
         if (!time) return;
