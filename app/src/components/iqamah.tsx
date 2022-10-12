@@ -44,9 +44,13 @@ const Iqamah = (props) => {
     };
 
 
-    const displayTimerPicker = (prayer) => {       
+    const displayTimerPicker = (prayer) => {
+        console.log(prayer);
+
         setSalahPicked(prayer.salah);
-        setTimePicked(prayer.time ?? new Date());
+        setTimePicked(prayer.time instanceof Date ? prayer.time : new Date());
+
+        console.log(timePicked instanceof Date);
 
         setShowTimePicker(true);
     };

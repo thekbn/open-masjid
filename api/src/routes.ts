@@ -84,7 +84,11 @@ async function routes(fastify: any, options: any) {
         
                     console.log(upsertIqamah);
         
-                    await client.query(upsertIqamah);
+                    const upsertIqamahResponse = await client.query(upsertIqamah);
+
+                    if(upsertIqamahResponse.rowCount < 1){
+                        throw new Error(`unable to update iqamah, body: ${JSON.stringify(request.body)}`);
+                    }
                 }
             })
 

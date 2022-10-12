@@ -49,7 +49,7 @@ export class MasjidApi {
         });
     }
 
-    async updateMasjid(id, masjid) {
+    async updateMasjid(id, masjid){
         await this.apiClient.put(`/masjid/${id}`,
             JSON.stringify({ ...masjid }),
             {
@@ -66,3 +66,5 @@ export class MasjidApi {
 }
 
 export const masjidApi = new MasjidApi();
+
+export default masjidApi;
