@@ -9,3 +9,14 @@ services:
       - ./db/db-data/:/var/lib/postgresql/data/
     env_file:
       - "api/.env"
+  api:
+    build:
+      context: ./api
+    depends_on:
+      - db  
+    volumes:
+      - ./api:/api
+    ports:
+      - "3000:3000"
+    env_file:
+      - "api/.env"

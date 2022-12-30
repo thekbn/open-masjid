@@ -8,14 +8,14 @@ fastify.register(require('fastify-postgres'), {
   user: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PASSWORD,
   database: process.env.POSTGRES_DB,
-  ssl: process.env.POSTGRES_HOST ? true : false
+  ssl: process.env.POSTGRES_HOST && process.env.POSTGRES_HOST.includes("https") ? true : false
 })
 
 fastify.register(route)
 
 const start = async () => {
   try {
-    await fastify.listen(3000)
+    await fastify.listen(3000, '0.0.0.0')
   } catch (err) {
     fastify.log.error(err)
     process.exit(1)
