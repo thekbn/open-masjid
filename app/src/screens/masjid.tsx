@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback, useContext} from 'react';
 import { Image, StyleSheet, FlatList, Text, View, Dimensions, Button, TouchableOpacity } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 
@@ -48,12 +49,28 @@ const MasjidScreen = ({ navigation, route }) => {
     useFocusEffect(
         useCallback(() => {
             const masjid = masjids.find(m => m.id === masjidId);
+
+            console.log(masjid);
+
             setMasjid(masjid);
 
             navigation.setOptions({ title: masjid.name });
             setIqamah(masjid?.iqamah?.length ? masjid?.iqamah : initialIqamah);
         }, [masjids])
     );
+
+    React.useLayoutEffect(() => {
+        navigation.setOptions({
+          headerRight: () => (
+            <Feather name="edit" size={24} color="black"  onPress={() => navigation.navigate({
+                name: 'Edit Masjid',
+                params: {
+                    masjid
+                }
+            })} />
+          ),
+        });
+      }, [navigation, masjid]);
 
     const updateIqamah = (salah, time) => {
         if (!time) return;

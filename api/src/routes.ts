@@ -24,6 +24,12 @@ ON CONFLICT ON CONSTRAINT masjid_salah
 DO UPDATE SET time = EXCLUDED.TIME;
 `;
 
+const QUERY_UPDATE_MASJID = `
+UPDATE masjids
+SET name = $2, address = $3
+WHERE id = $1;
+`
+
 async function routes(fastify: any, options: any) {
     fastify.get('/masjids', async (request: any, reply: any) => {
         const { rows } = await fastify.pg.query(QUERY_MASJID_WITH_IQAMAH);
@@ -43,8 +49,6 @@ async function routes(fastify: any, options: any) {
                 const res = await client.query(QUERY_ADD_MASJID, values);
 
                 if(res.rowCount == 1){
-                    reply.header("Access-Control-Allow-Origin", "*");
-                    reply.header("Access-Control-Allow-Methods", "POST");
                     reply.status(201)
                     reply.send(res.rows[0])
                 }else {
@@ -58,27 +62,40 @@ async function routes(fastify: any, options: any) {
         }
     });
 
-    fastify.post('/masjid/:id/iqamah', async (request: any, reply: any) => {
-        try {
-            const {id} =  request.params;
-            const iqamahs = request.body;
+    fastify.put('/masjid/:id', async (request: any, reply: any) => {
+        try {        
+            await fastify.pg.transact(async (client: any) => {
+                const {id} =  request.params;
+                const {name, address, iqamahs} = request.body;
+                const values = [id, name, address];
 
-            const rowsToAdd = iqamahs.map((i: any) => [id, i.salah, i.time]);
+                const res = await client.query(QUERY_UPDATE_MASJID, values);
 
-            console.log(JSON.stringify(rowsToAdd, null, 2))
+                if(res.rowCount != 1){
+                    throw new Error(`unable to update masjid, body: ${JSON.stringify(request.body)}`);
+                }
 
-            const upsertIqamah = format(QUERY_UPSERT_IQAMAH, rowsToAdd);
+                if(iqamahs){
+                    const rowsToAdd = iqamahs.map((i: any) => [id, i.salah, i.time]);
+    
+                    console.log(JSON.stringify(rowsToAdd, null, 2))
+        
+                    const upsertIqamah = format(QUERY_UPSERT_IQAMAH, rowsToAdd);
+        
+                    console.log(upsertIqamah);
+        
+                    const upsertIqamahResponse = await client.query(upsertIqamah);
 
-            console.log(upsertIqamah);
+                    if(upsertIqamahResponse.rowCount < 1){
+                        throw new Error(`unable to update iqamah, body: ${JSON.stringify(request.body)}`);
+                    }
+                }
+            })
 
-            const res = await fastify.pg.query(upsertIqamah);
-            
-            reply.header("Access-Control-Allow-Origin", "*");
-            reply.header("Access-Control-Allow-Methods", "POST");
             reply.send({
-                message: 'updated iqamah',
-                count: res.rowCount
+                message: 'updated masjid'
             });
+         
         } catch (err) {
             console.log(err)
             reply.send(new Error("failed process request"))

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Image, StyleSheet, FlatList, Text, View, Dimensions, TextInput, Button, TouchableOpacity } from 'react-native';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
-import apiClient from '../util/masjidApi';
+import masjidApi from '../util/masjidApi';
 
 import Iqamah from '../components/iqamah';
 import MasjidListContext from '../contexts/MasjidListContext'
@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     },
 });
 
-const initialIqamah = [
+const initialIqamahs = [
     { salah: 'Fajr', time: '' },
     { salah: 'Zuhr', time: '' },
     { salah: 'Asr', time: '' },
@@ -51,12 +51,12 @@ const EditIqamahScreen = ({ navigation, route }) => {
         navigation.setOptions({ title: title });
     })
 
-    const [iqamah, setIqamah] = useState(masjid?.iqamah?.length ? masjid?.iqamah : initialIqamah);
+    const [iqamahs, setIqamahs] = useState(masjid?.iqamah?.length ? masjid?.iqamah : initialIqamahs);
     const [saving, setSaving] = useState(false);
 
     return (
         <View>
-            <Iqamah iqamah={iqamah} />
+            <Iqamah iqamah={iqamahs} />
 
             <Button
                 title='Save'
@@ -64,14 +64,8 @@ const EditIqamahScreen = ({ navigation, route }) => {
                 onPress={async () => {
                     setSaving(true);
 
-                    await apiClient.post(`/masjid/${masjid.id}/iqamah`,
-                        JSON.stringify(sanitizeIqamah(iqamah)),
-                        {
-                            headers: {
-                                'Content-Type': 'application/json'
-                            }
-                        }
-                    ).then(response =>{
+                    await masjidApi.updateMasjid(masjid.id, { ...masjid, iqamahs: sanitizeIqamah(iqamahs) })
+                    .then(response =>{
                         loadData();
 
                         navigation.navigate({

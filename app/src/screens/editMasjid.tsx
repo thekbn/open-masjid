@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Image, StyleSheet, FlatList, Text, View, Dimensions, TextInput, Button } from 'react-native';
-import apiClient from '../util/masjidApi';
+import { masjidApi } from '../util/masjidApi';
 
 import MasjidListContext from '../contexts/MasjidListContext';
 
@@ -31,52 +31,59 @@ const styles = StyleSheet.create({
     },
 });
 
+const initialMasjid = {
+    name: '',
+    address: ''
+}
+
 const EditMasjidScreen = ({ navigation, route }) => {
 
-    const { masjidId } = route.params || {};
+    const { masjid } = route.params || {};
+
+    console.log(route.params)
 
     const { masjids, loadData } = useContext(MasjidListContext);
-    const [masjid, setMasjid] = useState(null);
+    const [masjidUpdates, setMasjidUpdates] = useState(masjid ?? initialMasjid);
 
     useEffect(() => {
-        const masjid = masjids.find(m => m.id === masjidId);
-        setMasjid(masjid);
-
-        const title = masjidId ? 'Edit Masjid' : 'New Masjid';
+        const title = masjid ? 'Edit Masjid' : 'New Masjid';
         navigation.setOptions({ title: title });
     })
 
-    const [name, setName] = useState('');
-    const [address, setAddress] = useState('');
+    const updateMasjidName = (name) => {
+        setMasjidUpdates({...masjidUpdates, name: name})
+    }
+
+    const updateMasjidAddress = (address) => {
+        setMasjidUpdates({...masjidUpdates, address: address})
+    }
+
 
 
     return (
         <View>
             <TextInput
                 style={styles.input}
-                onChangeText={setName}
+                onChangeText={updateMasjidName}
                 placeholder='Name'
-                value={name}
+                value={masjidUpdates.name}
             />
             <TextInput
                 style={styles.input}
-                onChangeText={setAddress}
+                onChangeText={updateMasjidAddress}
                 placeholder='Address'
-                value={address}
+                value={masjidUpdates.address}
             />
             <Button
                 title='Save'
                 onPress={async () => {
-                    await apiClient.post('/masjid',
-                        JSON.stringify({ name, address }),
-                        {
-                            headers: {
-                                'Content-Type': 'application/json'
-                            }
-                        }
-                    );
+                    if (masjidUpdates?.id) {
+                        await masjidApi.updateMasjid(masjidUpdates.id, masjidUpdates);
+                    } else {
+                        await masjidApi.addMasjid(masjidUpdates);
+                    }
                     loadData();
-                    navigation.navigate('Home');
+                    navigation.goBack();                    
                 }}
             />
         </View>
