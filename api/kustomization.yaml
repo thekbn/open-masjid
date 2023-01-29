@@ -1,0 +1,6 @@
+secretGenerator:
+- name: openmasjid-vars
+  envs:
+  - .env
+generatorOptions:
+  disableNameSuffixHash: true
