@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: openmasjid-db
+  name: openmasjid-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: openmasjid-db
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: openmasjid-db
+    spec:
+      containers:
+      - image: openmasjid.azurecr.io/open-masjid-db
+        name: openmasjid-db
+        envFrom:
+        - secretRef:
+            name: openmasjid-vars
+        resources: {}
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: openmasjid-db
+spec:
+  ports:
+  - port: 5432
+    protocol: TCP
+    targetPort: 5432
+  selector:
+    app: openmasjid-db
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: openmasjid-api
+  name: openmasjid-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: openmasjid-api
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: openmasjid-api
+    spec:
+      containers:
+      - image: openmasjid.azurecr.io/open-masjid-api
+        name: open-masjid-api
+        envFrom:
+        - secretRef:
+            name: openmasjid-vars
+        resources: {}
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: openmasjid-api-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: openmasjid-api
+  ports:
+  - port: 80
+    name: http 
+    protocol: TCP
+    targetPort: 3000

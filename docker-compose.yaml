@@ -1,11 +1,25 @@
 version: "3.9"
 services:
   db:
-    image: postgis/postgis
+    platform: linux/amd64
+    build:
+      context: ./db
     ports:
       - "5432:5432"
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./db/db-data/:/var/lib/postgresql/data/
+    env_file:
+      - "api/.env"
+  api:
+    platform: linux/amd64
+    build:
+      context: ./api
+    depends_on:
+      - db  
+    volumes:
+      - ./api:/api
+    ports:
+      - "3000:3000"
     env_file:
       - "api/.env"
